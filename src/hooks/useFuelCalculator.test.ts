@@ -1,5 +1,6 @@
 import { renderHook, act } from '@testing-library/react'
 import { useFuelCalculator } from './useFuelCalculator'
+import { formatCurrency } from '../utils/formatters';
 
 const mockFormEvent = {
   preventDefault: jest.fn(),
@@ -45,15 +46,18 @@ describe('useFuelCalculator', () => {
     act(() => {
       result.current.setEthanolPrice(3.00) // 3.00 / 5.00 = 0.6 (<= 0.7)
       result.current.setGasolinePrice(5.00) 
-      result.current.calculate(mockFormEvent)
-    });
+    })
+
+    act(() => {
+      result.current.calculate(mockFormEvent);
+    })
 
     expect(result.current.info).toEqual({
       type: 'Álcool',
-      value: 'R$ 3,00',
+      value: formatCurrency(3.00),
     })
     expect(mockFormEvent.preventDefault).toHaveBeenCalledTimes(1)
-  });
+  })
 
   it('should calculate and set info for Gasoline when it is more advantageous', () => {
     const { result } = renderHook(() => useFuelCalculator())
@@ -61,12 +65,15 @@ describe('useFuelCalculator', () => {
     act(() => {
       result.current.setEthanolPrice(4.00) // 4.00 / 5.00 = 0.8 (> 0.7)
       result.current.setGasolinePrice(5.00) 
-      result.current.calculate(mockFormEvent)
-    });
+    })
+
+    act(() => {
+      result.current.calculate(mockFormEvent);
+    })
 
     expect(result.current.info).toEqual({
       type: 'Gasolina',
-      value: 'R$ 5,00',
+      value: formatCurrency(5.00),
     })
     expect(mockFormEvent.preventDefault).toHaveBeenCalledTimes(1)
   });
